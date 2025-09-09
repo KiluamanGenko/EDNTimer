@@ -3,33 +3,70 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Compteur EDN – 20 octobre 2025</title>
 <style>
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(to bottom right,#eef2ff,#f0f9ff)}
-  .card{background:#fff;padding:2rem;border-radius:1.5rem;box-shadow:0 10px 20px rgba(0,0,0,.1);max-width:640px;width:100%;text-align:center}
-  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
-  .box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:1rem;padding:1rem}
-  .box-value{font-size:2rem;font-weight:700}
-  .progress{height:12px;background:#f3f4f6;border-radius:9999px;overflow:hidden;margin-top:.5rem}
-  .bar{height:100%;background:linear-gradient(90deg,#34d399,#60a5fa)}
-  @media (max-width:520px){.grid{grid-template-columns:repeat(2,1fr)}}
+  :root{
+    --bg1:#0b1220;      /* fond 1 */
+    --bg2:#0a0f1c;      /* fond 2 */
+    --card:#0f172a;     /* carte */
+    --text:#e5e7eb;     /* texte principal */
+    --muted:#94a3b8;    /* texte secondaire */
+    --box:#111b33;      /* cases temps */
+    --box-border:#1e2a44;
+  }
+  html,body{height:100%}
+  body{
+    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:var(--text);
+  }
+  .card{
+    background:var(--card); padding:2rem; border-radius:1.25rem;
+    box-shadow:0 10px 30px rgba(0,0,0,.35); max-width:640px; width:100%;
+    text-align:center; border:1px solid rgba(148,163,184,.12);
+  }
+  h1{margin:.25rem 0 0; font-size:1.85rem}
+  .muted{color:var(--muted)}
+  .grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin:1.25rem 0 1rem}
+  .box{background:var(--box); border:1px solid var(--box-border); border-radius:1rem; padding:1rem}
+  .box-value{font-size:2rem; font-weight:700}
+  .progress{height:12px; background:#0b1324; border-radius:9999px; overflow:hidden; margin-top:.5rem; border:1px solid #1e293b}
+  .bar{height:100%; background:linear-gradient(90deg,#10b981,#6366f1)}
+  @media (max-width:520px){ .grid{grid-template-columns:repeat(2,1fr)} }
 </style>
-</head><body>
+</head>
+<body>
   <div class="card">
-    <div style="color:#6b7280;font-size:.9rem;margin-bottom:.5rem">EDN 2025 — Décompte</div>
-    <h1 style="font-size:1.8rem;font-weight:800;margin:.5rem 0">Jusqu'au 20 octobre 2025</h1>
-    <p style="color:#6b7280;margin-bottom:1.5rem">Fuseau : Europe/Paris • cible 08:00</p>
+    <div class="muted" style="font-size:.9rem;margin-bottom:.5rem">EDN 2025 — Décompte</div>
+    <h1>Jusqu'au 20 octobre 2025</h1>
+    <p class="muted" style="margin:.25rem 0 1.25rem">Fuseau : Europe/Paris • cible 08:00</p>
+
     <div id="countdown"></div>
-    <div style="margin-top:2rem;font-size:.75rem;color:#9ca3af">Modifie la constante <code>TARGET</code> pour changer la date/heure.</div>
+
+    <div class="muted" style="margin-top:1.25rem;font-size:.8rem">
+      Ajuste la constante <code>TARGET</code> pour changer la date/heure.
+    </div>
   </div>
+
   <script>
     const TARGET = new Date("2025-10-20T08:00:00+02:00").getTime();
     const START  = new Date("2025-09-10T00:00:00+02:00").getTime();
+
     function update(){
-      const now = Date.now(), remaining = Math.max(TARGET-now,0), total=Math.max(TARGET-START,1);
+      const now = Date.now();
+      const remaining = Math.max(TARGET - now, 0);
+      const total = Math.max(TARGET - START, 1);
       const percent = Math.max(0, Math.min(100, (remaining/total)*100));
-      const d=Math.floor(remaining/86400000), h=Math.floor((remaining%86400000)/3600000),
-            m=Math.floor((remaining%3600000)/60000), s=Math.floor((remaining%60000)/1000);
-      const el=document.getElementById("countdown");
-      if(!remaining){ el.innerHTML = '<div style="font-size:2.5rem;font-weight:bold;margin-bottom:.5rem;">Jour J 🎯</div><div style="color:#6b7280;">Respire. Tu sais. Go.</div>'; return; }
+
+      const d = Math.floor(remaining / 86400000);
+      const h = Math.floor((remaining % 86400000) / 3600000);
+      const m = Math.floor((remaining % 3600000) / 60000);
+      const s = Math.floor((remaining % 60000) / 1000);
+
+      const el = document.getElementById("countdown");
+      if (remaining === 0){
+        el.innerHTML = '<div style="font-size:2.4rem;font-weight:800;margin:.3rem 0">Jour J 🎯</div><div class="muted">Respire. Tu sais. Go.</div>';
+        return;
+      }
       el.innerHTML = `
         <div class="grid">
           <div class="box"><div class="box-value">${String(d).padStart(2,'0')}</div><div>Jours</div></div>
@@ -37,12 +74,14 @@
           <div class="box"><div class="box-value">${String(m).padStart(2,'0')}</div><div>Minutes</div></div>
           <div class="box"><div class="box-value">${String(s).padStart(2,'0')}</div><div>Secondes</div></div>
         </div>
-        <div style="margin-bottom:.5rem;font-size:2rem;font-weight:bold;">J-${d}</div>
-        <div style="color:#6b7280;margin-bottom:1rem;">(${d} j ${String(h).padStart(2,'0')}h${String(m).padStart(2,'0')})</div>
-        <div style="font-size:.8rem;color:#6b7280;">Temps restant</div>
+        <div style="font-size:2rem;font-weight:800;margin:.25rem 0 .4rem">J-${d}</div>
+        <div class="muted" style="margin-bottom:.9rem">(${d} j ${String(h).padStart(2,'0')}h${String(m).padStart(2,'0')})</div>
+        <div class="muted" style="font-size:.85rem">Temps restant</div>
         <div class="progress"><div class="bar" style="width:${percent}%"></div></div>
-        <div style="font-size:.7rem;color:#9ca3af;margin-top:.3rem;">${percent.toFixed(1)}% du temps initial restant (10 sept → 20 oct)</div>`;
+        <div class="muted" style="font-size:.75rem;margin-top:.35rem">${percent.toFixed(1)}% du temps initial restant (10 sept → 20 oct)</div>
+      `;
     }
     update(); setInterval(update,1000);
   </script>
-</body></html>
+</body>
+</html>
